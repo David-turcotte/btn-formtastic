@@ -1,0 +1,225 @@
+// change button Folder Formtastic
+
+(function($) {
+
+    $.fn.bravadFile = function() {
+
+        if ( typeof arguments[0] === 'string' ) {
+
+            var property = arguments[1],
+
+                args = Array.prototype.slice.call( arguments );
+
+
+
+            args.splice( 0, 1 );
+
+
+
+            methods[arguments[0]].apply( this, args );
+
+
+
+        } else {
+
+            init.apply( this, arguments );
+
+        }
+
+
+
+        return this;
+
+    };
+
+
+
+    function init( options ) {
+
+        /**
+
+         * Default options
+
+         */
+
+        var settings = $.extend({}, {
+
+                label: 'Parcourir',
+
+                placeholder: ''
+
+            }, options );
+
+
+
+        /**
+
+         * Init
+
+         */
+
+        this.each( function() {
+
+            var input = $( this );
+
+
+
+            input.wrap( '<div class="bvfile"></div>' );
+
+
+
+            var file        = input.closest( '.bvfile' ),
+
+                label       = input.attr( 'data-label' ),
+
+                placeholder = input.attr( 'data-placeholder' );
+
+
+
+            if ( typeof label === 'undefined' || label == '' ) {
+
+                label = settings.label;
+
+            }
+
+
+
+            if ( typeof placeholder === 'undefined' || placeholder == '' ) {
+
+                placeholder = settings.placeholder;
+
+            }
+
+
+
+            if ( input.is( ':disabled' ) ) {
+
+                file.addClass( 'is-disabled' );
+
+            }
+
+
+
+            file.prepend( '<button type="button" class="button">' + label + '</button><div class="file__selected">' + placeholder + '</div>' );
+
+            file.append( '<a class="file__remove">&times;</a>' );
+
+        });
+
+
+
+        /**
+
+         * Click button event
+
+         */
+
+        this.closest( '.bvfile' ).find( 'button' ).on( 'click', function() {
+
+            var btn = $( this ),
+
+                file = btn.closest( '.bvfile' ),
+
+                input = file.find( 'input' );
+
+
+
+            input.click();
+
+
+
+            return false;
+
+        });
+
+
+
+        /**
+
+         * Click remove event
+
+         */
+
+        this.closest( '.bvfile' ).find( '.file__remove' ).on( 'click', function() {
+
+            var btn = $( this ),
+
+                file = btn.closest( '.bvfile' ),
+
+                input = file.find( 'input' ),
+
+                selected = file.find( '.file__selected' );
+
+
+
+            input.val( '' ).change();
+
+
+
+            selected.text( selected.attr( 'data-placeholder' ) );
+
+
+
+            return false;
+
+        });
+
+
+
+        /**
+
+         * Change event
+
+         */
+
+        this.on( 'change', function() {
+
+            var input = $( this ),
+
+                file = input.closest( '.bvfile' ),
+
+                selected = file.find( '.file__selected' );
+
+
+
+            if( input.val() !== '' ) {
+
+                file.addClass( 'is-active' );
+
+
+
+            } else {
+
+                file.removeClass( 'is-active' );
+
+            }
+
+
+
+            var names = '';
+
+            for ( var i = 0; i < input.get(0).files.length; ++i ) {
+
+                if ( i > 0 ) {
+
+                    names += ', ';
+
+                }
+
+                names += input.get(0).files[i].name;
+
+            }
+
+
+
+            selected.text( names );
+
+        });
+
+    }
+
+}(jQuery));
+
+
+
+jQuery('input[type=file]').bravadFile();
